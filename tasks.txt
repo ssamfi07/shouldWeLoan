@@ -1,0 +1,99 @@
+Tasks
+Using the bank.zip data set, you have a set of main tasks to accomplish as described next. Still, you are free to include other tasks to increase the value of your assignment.  
+
+Task 1: Data Understanding and Preparation
+This task involves summarizing and visualizing the data to provide valuable insights. Consider questions that could be interesting to check with the available data and provide answers using textual summaries or data visualization. Based on this analysis, you should also check if it is necessary to carry out any data clean-up and pre-processing steps.
+
+    Attempting to gain insight from transactions related to account ID
+        - should ignore transactions not linked to account IDs or other IDs
+        - insights about accounts that have loans:
+                        loan_id  account_id    date  amount  duration  (monthly)payments  status
+                    20      4959           2  940105   80952        24      3373       1
+                    239     4961          19  960429   30276        12      2523      -1
+                    240     4973          67  960502  165960        24      6915       1
+                    307     4996         132  961106   88440        12      7370       1
+                    52      5002         173  940531  104808        12      8734       1
+                    ..       ...         ...     ...     ...       ...       ...     ...
+                    293     7271       11186  961002  392460        60      6541       1
+                    6       7284       11265  930915   52788        12      4399       1
+                    189     7304       11349  951029  419880        60      6998       1
+                    271     7305       11359  960806   54024        12      4502       1
+                    327     7308       11362  961227  129408        24      5392       1
+
+                    [328 rows x 7 columns]
+                    No accounts with multiple loans.
+            Based on this information we should train the model to predict 
+                if the accounts that have no loans can be selected as eligible for a loan and maybe predict the amount, duration and payments needed.
+
+            we have identified the clients that have problems with loan payments
+                     disp_id  client_id  account_id   type  loan_id    date  amount  duration  payments  status
+                2         25         25          19  OWNER     4961  960429   30276        12      2523      -1
+                10       424        424         347  OWNER     5045  950501  187224        24      7801      -1
+                11       512        512         426  OWNER     5060  940719  252060        60      4201      -1
+                16       946        946         790  OWNER     5126  940724  208128        48      4336      -1
+
+            Also consider the number of transactions in the account for the client to grant a loan.
+            We need to consider the number of transactions in a month, the total value of the withdrawals and the total value of the montly income to calculate a possible loan.
+            variance of the dates of adding money matters - periodicity and stability is good for getting a loan
+                                                          - adding cash manually at random times is not a good sign (combined with aggressive spending)
+                
+                NEW COLUMN: the difference of 2 adjacent credit transactions (additions to balance)
+                NEW COLUMN: the difference of 2 adjacent withdrawals
+                These are needed to calculate the mean & variance balance and the variance of credits and withdrawals.
+            Also the period should be proportional to the seniority of the client (the more money flows and the lower the variance of the withdrawals, the more trust can the bank put into the client)
+
+            Birthdate should be converted to age of the client.
+
+Task 2: Descriptive Modelling
+This task aims to apply a clustering algorithm on a set of variables that you find helpful to provide some description of the type of clients. 
+
+Loss of Detailed Information:
+
+Aggregating transactions to summary statistics means losing detailed information about individual transactions. This might be particularly relevant if the variation within each class (paid or unpaid loans) is substantial.
+Impact on Imbalanced Classes:
+
+If the classes are imbalanced, summary statistics might not capture the nuances of the minority class well. For example, if most loans are paid (status 1), aggregating statistics might not capture the specific patterns of unpaid loans (status -1).
+Feature Importance:
+
+When using summary statistics, it's essential to understand which features contribute most to the predictive power of your model. Some summary statistics might have more impact than others.
+Model Performance:
+
+The impact on model performance depends on the characteristics of your data. In cases where detailed transaction information is crucial for predictions, using only summary statistics might lead to a loss of predictive power.
+
+
+Task 3: Predictive Modelling
+From the available data, we should define the data set used for the classification task at hand. Different models should be considered,
+and the choice of the final model should be justified. 
+In a typical binary classification problem, the output of a predictive model like random forests (method = "rf") often produces a probability score between 0 and 1,
+representing the likelihood of belonging to the positive class.
+However, the actual predicted class is determined by applying a threshold to this probability.
+In our case, where the target variable status has values of 1 and -1,
+we'll need to set a threshold to convert the predicted probabilities into the predicted class.
+The default threshold is often 0.5, meaning that if the predicted probability is greater than or equal to 0.5, the predicted class is 1; otherwise, it's -1.
+
+Task 4: Kaggle Competition
+Additionally, you should submit your solution for the data set available in the Kaggle Competition - open on November 7th. Your private rank will be accounted for in the final grade. 
+
+
+Tools
+You can use R or Python. You can find material for dynamic reporting in R with markdown if you choose to use R. You can use the Colab Research Notebooks if you decide to use Python. 
+
+
+Deliverables
+The practical assignment is mandatory and should be performed by groups of, preferably, three students. You should constitute your group until November 7th, 2023. After this date, no more groups are accepted.
+
+Your assignment should be submitted on Moodle with a compressed file containing the following items:
+
+slides for presentation (PDF format) focusing on the main issues of the project for a 10-minute presentation; any additional information that cannot be presented in the 10 min slot can be included as annexes to the presentation;
+the source of a ready-to-execute dynamic report or notebook with all the code necessary to run to obtain the results you present, including any complementary files needed to execute your report (e.g. data files, data objects).
+
+Suggested organization:
+
+problem definition (1 slide)
+data understanding:  concise summary, focusing on the main findings (2 slides)
+data preparation: outline, focusing on the main operations  (2 slides)
+descriptive modelling (1 slide) - if performed
+predictive modelling with experimental results (2 slides)
+conclusions, limitations and future work (1 slide)
+annexes
+TOTAL: max 40 slides
