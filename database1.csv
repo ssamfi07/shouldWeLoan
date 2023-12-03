@@ -1,4 +1,4 @@
-loan_id,account_id,amount_x,duration,payments,status,trans_id,date_y,type,amount_y,balance,date_diff
+loan_id,account_id,amount_loan,duration,payments,status,trans_id,date_y,type,amount_y,balance,date_diff
 4959,2,80952,24,3373,1,276,730684800,credit,1100.0,1100.0,
 4959,2,80952,24,3373,1,279,731894400,credit,20236.0,21336.0,1209600.0
 4959,2,80952,24,3373,1,697,733276800,credit,3700.0,25036.0,1382400.0

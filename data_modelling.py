@@ -51,13 +51,13 @@ def sort_trans_loans_by_account_id(df_trans, df_loan):
 
     return df_trans_sorted, df_loans_sorted
 
-def export_kaggle_merge():
-    kaggle_trans_sorted, kaggle_loans_sorted = sort_trans_loans_by_account_id(df_trans_comp, df_loans_comp)
-    kaggle_merged = pd.merge(kaggle_trans_sorted, kaggle_loans_sorted, on='account_id', how='left')
-    kaggle_merged.drop(['bank', 'account', 'operation', 'k_symbol', 'date_x', 'date_y', 'trans_id'], axis=1, inplace=True)
-    kaggle_merged.rename(columns={'amount_y': 'amount_loan', 'amount_x': 'amount_trans'}, inplace=True)
-
-    kaggle_merged.to_csv("kaggle.csv", sep=',', index=False, encoding='utf-8')
+# for the original database.csv
+def export_trans_loans_merge(df_trans, df_loan, file_name):
+    df_trans_sorted, df_loans_sorted = sort_trans_loans_by_account_id(df_trans, df_loan)
+    merged = pd.merge(df_loans_sorted, df_trans_sorted, on='account_id', how='left')
+    merged.drop(['bank', 'account', 'operation', 'k_symbol', 'date_x', 'date_y', 'trans_id'], axis=1, inplace=True)
+    merged.rename(columns={'amount_x': 'amount_loan', 'amount_y': 'amount_trans'}, inplace=True)
+    merged.to_csv(file_name, sep=',', index=False, encoding='utf-8')
 
 def plot_balance_graphs(unique_account_ids, df_trans_sorted, df_loans_sorted):
     # for all accounts make the balance graph in time based in transactions - deposits(lines) or expenditures(dots)
@@ -271,3 +271,13 @@ def apply_model_and_export():
     naive_bayes_predictions.to_csv("naive_bayes_result.csv", sep=',', index=False, encoding='utf-8')
 
 # apply_model_and_export()
+
+def merge_and_export(df_trans, df_loans, fileName):
+    df_trans_sorted, df_loans_sorted = sort_trans_loans_by_account_id(df_trans, df_loans)
+    total = feature_engineering(df_trans_sorted, df_loans_sorted)
+    # drop account_id, we already have loan_id
+    total.drop('account_id', axis=1, inplace=True)
+    total.to_csv(fileName, sep=',', index=False, encoding='utf-8')
+    print(total)
+
+merge_and_export(df_trans, df_loan, "database.csv")
