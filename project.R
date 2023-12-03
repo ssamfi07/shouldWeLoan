@@ -16,7 +16,11 @@ library(keras)
 library(xgboost)
 
 # restart R if necessary
+<<<<<<< HEAD
 # .rs.restartR()
+=======
+.rs.restartR()
+>>>>>>> 2147118 ([4]Modelling in python)
 
 #TASK1: DATA UNDERSTANDING AND PREPARATION------------------------------------------------------------
 
@@ -31,9 +35,17 @@ read_and_preprocess <- function(file_path) {
   # we don't need "trans_id" or "account_id" -> remove
   df <- df[, !colnames(df) %in% c("trans_id")]
   df <- df[, !colnames(df) %in% c("account_id")]
+<<<<<<< HEAD
   
   # convert data_diff to numeric
   df$date_diff <- as.numeric(df$date_diff) 
+=======
+  df <- df[, !colnames(df) %in% c("date_y")]
+  df <- df[, !colnames(df) %in% c("loan_id")]
+  
+  # convert data_diff to numeric
+  df$date_diff <- as.numeric(df$date_diff)
+>>>>>>> 2147118 ([4]Modelling in python)
   
   # convert our status target variable to binary -- 1 for paid 0 for unpaid
   df$status_binary <- ifelse(df$status == 1, 1, 0)
@@ -62,7 +74,11 @@ normalize_and_encode <- function(df) {
     #normalize every numeric column (with z-score standardization), except for the target variable "status_binary"
     numeric_cols <- sapply(df, is.numeric)
     numeric_cols["status_binary"] <- FALSE
+<<<<<<< HEAD
     numeric_cols["loan_id"] <- FALSE
+=======
+    numeric_cols["type"] <- FALSE
+>>>>>>> 2147118 ([4]Modelling in python)
     df[numeric_cols] <- scale(df[numeric_cols])
     
     #check for categorical columns
@@ -88,11 +104,19 @@ perform_pca <- function(df) {
     #PCA in relation to "loan_id"
     pca <- prcomp(df, scale = TRUE)
     #visual representation of the PCA (1 and 2)
+<<<<<<< HEAD
     biplot(pca, scale = 0, choices = c(1, 2))
     #new dataframe with only 2 PCs
     pcs_only <- as.data.frame(pca$x[, 1:2])
     #new dataframe with the original columns and the first 2 PCs
     df_with_pcs <- cbind(df, pca$x[, 1:2])
+=======
+    biplot(pca, scale = 0, choices = c(1, 3))
+    #new dataframe with only 2 PCs
+    pcs_only <- as.data.frame(pca$x[, 1:3])
+    #new dataframe with the original columns and the first 2 PCs
+    df_with_pcs <- cbind(df, pca$x[, 1:3])
+>>>>>>> 2147118 ([4]Modelling in python)
     return(list(pca = pca, pcs_only = pcs_only))
 }
 
@@ -107,9 +131,15 @@ hierarchical_clustering <- function(df) {
     #with euclidean and ward method
     dist_matrix <- dist(df, method = "euclidean")
     hclust_model <- hclust(dist_matrix, method = "ward.D2")
+<<<<<<< HEAD
     plot(hclust_model, hang = 0.1)
     #fviz_dend(hclust_model, k = 3, cex = 0.6, main = "Dendrogram of Hierarchical Clustering")
     #not readable
+=======
+    # plot(hclust_model, hang = 0.1)
+    # fviz_dend(hclust_model, k = 3, cex = 0.6, main = "Dendrogram of Hierarchical Clustering")
+    # not readable
+>>>>>>> 2147118 ([4]Modelling in python)
     return(hclust_model)
 }
 
@@ -121,11 +151,21 @@ partitional_clustering <- function(df, pcs_only) {
     hclust_model <- hierarchical_clustering(df)
     #graph with the within cluster sum of squares to determine the ideal number of clusters
     wcss <- vector()
+<<<<<<< HEAD
     for (i in 1:10) {
       kmeans_model <- kmeans(pcs_only , centers = i, nstart = 10)
       wcss[i] <- kmeans_model$tot.withinss
     }
     plot(1:10, wcss, type = "b", xlab = "Number of Clusters", ylab = "WCSS")
+=======
+    # we should make a new local var for pcs_only
+    local_pcs_only <- pcs_only
+    for (i in 1:10) {
+      kmeans_model <- kmeans(local_pcs_only , centers = i, nstart = 10)
+      wcss[i] <- kmeans_model$tot.withinss
+    }
+    # plot(1:10, wcss, type = "b", xlab = "Number of Clusters", ylab = "WCSS")
+>>>>>>> 2147118 ([4]Modelling in python)
     diff_wcss <- c(0, diff(wcss))
     #we apply the elbow method, and the ideal number of clusters is 3 or 4
     
@@ -133,14 +173,24 @@ partitional_clustering <- function(df, pcs_only) {
     num_clusters <- 3
     cluster_cut <- cutree(hclust_model, k = num_clusters)
     #adds a new column to the data frame with the clusters id
+<<<<<<< HEAD
     pcs_only$Cluster <- as.factor(cluster_cut)
     #visualize the clusters
     ggplot(pcs_only, aes(x = PC1, y = PC2, color = Cluster)) +
+=======
+    local_pcs_only$Cluster <- as.factor(cluster_cut)
+    #visualize the clusters
+    ggplot(local_pcs_only, aes(x = PC1, y = PC2, color = Cluster)) +
+>>>>>>> 2147118 ([4]Modelling in python)
         geom_point() +
         labs(title = "Cluster Analysis", x = "PC1", y = "PC2")
     
     #silhouette coefficient to measure how good the partitional clustering is
+<<<<<<< HEAD
     sf <- silhouette(cluster_cut, dist(pcs_only))
+=======
+    sf <- silhouette(cluster_cut, dist(local_pcs_only))
+>>>>>>> 2147118 ([4]Modelling in python)
     sf_avg <- mean(sf[, 3])
     print(sf_avg)
     # 0.30 is not a very good result
@@ -148,9 +198,15 @@ partitional_clustering <- function(df, pcs_only) {
     # sad update also obtained 0.27
     
     #k-means (to numeric columns)
+<<<<<<< HEAD
     numeric_cols <- sapply(pcs_only, is.numeric)
     pcs_only_numeric <- pcs_only[, numeric_cols]
     kmeans_model <- kmeans(pcs_only, centers = num_clusters, nstart = 25)
+=======
+    numeric_cols <- sapply(local_pcs_only, is.numeric)
+    pcs_only_numeric <- local_pcs_only[, numeric_cols]
+    kmeans_model <- kmeans(local_pcs_only, centers = num_clusters, nstart = 25)
+>>>>>>> 2147118 ([4]Modelling in python)
     #visualize the clusters from k-means
     fviz_cluster(kmeans_model, data = pcs_only_numeric, geom = "point",
                  ellipse.type = "t", ggtheme = theme_classic(),
@@ -164,6 +220,7 @@ partitional_clustering <- function(df, pcs_only) {
     sf_kmeans_avg <- mean(sf_kmeans[,3])
     print(sf_kmeans_avg) 
     # 0.36 is not a very good result
+<<<<<<< HEAD
     # update neither is 0.32
     
     return(cluster_cut)
@@ -253,3 +310,85 @@ cat("Error rate:", error_rate, "\n")
 #plot the decision tree
 plot(tree_model, uniform = TRUE, compress = TRUE, margin = 0.1)
 text(tree_model, use.n = TRUE, cex = 0.4) 
+=======
+    # update -- 0.43 is better
+    
+    return(cluster_cut)
+}
+
+
+#TASK 3: PREDICTIVE MODELLING-------------------------------------------------------------------------
+
+#SPLIT THE DATA
+
+split_data <- function(df) {
+  #random split
+  set.seed(123)
+  #80% training and 20% testing
+  train_indices <- sample(1:nrow(df), 0.8*nrow(df))
+  #training dataframe
+  train <- df[train_indices, ]
+  #testing dataframe
+  test <- df[-train_indices, ]
+  return (list(train = train, test = test))
+}
+
+df_train <- read_and_preprocess("database.csv")
+print(df_train)
+df_preprocessed <- normalize_and_encode(df_train)
+print(df_preprocessed)
+result <- perform_pca(df_preprocessed)
+cluster_cut <- partitional_clustering(df_preprocessed, result$pcs_only)
+
+# get the hierarchical model
+hclust_model <- hierarchical_clustering(df_preprocessed)
+#graph with the within cluster sum of squares to determine the ideal number of clusters
+wcss <- vector()
+# we should make a new local var for pcs_only
+local_pcs_only <- result$pcs_only
+print(local_pcs_only)
+for (i in 1:20) {
+  kmeans_model <- kmeans(local_pcs_only , centers = i, nstart = 10)
+  wcss[i] <- kmeans_model$tot.withinss
+}
+plot(1:20, wcss, type = "b", xlab = "Number of Clusters", ylab = "WCSS")
+diff_wcss <- c(0, diff(wcss))
+#we apply the elbow method, and the ideal number of clusters is 3 or 4
+
+#we will apply partitional clustering with 3 and 4 clusters and determine which one is better
+num_clusters <- 3
+cluster_cut <- cutree(hclust_model, k = num_clusters)
+#adds a new column to the data frame with the clusters id
+local_pcs_only$Cluster <- as.factor(cluster_cut)
+#visualize the clusters
+ggplot(local_pcs_only, aes(x = PC1, y = PC2, z = PC3, color = Cluster)) +
+  geom_point() +
+  labs(title = "Cluster Analysis", x = "PC1", y = "PC2", z = "PC3")
+
+#silhouette coefficient to measure how good the partitional clustering is
+sf <- silhouette(cluster_cut, dist(local_pcs_only))
+sf_avg <- mean(sf[, 3])
+print(sf_avg)
+# 0.30 is not a very good result
+# update -- obtained 0.446469
+# sad update also obtained 0.27
+
+#k-means (to numeric columns)
+numeric_cols <- sapply(local_pcs_only, is.numeric)
+pcs_only_numeric <- local_pcs_only[, numeric_cols]
+kmeans_model <- kmeans(local_pcs_only, centers = num_clusters, nstart = 25)
+#visualize the clusters from k-means
+fviz_cluster(kmeans_model, data = pcs_only_numeric, geom = "point",
+             ellipse.type = "t", ggtheme = theme_classic(),
+             ellipse.alpha = 0.5, palette = "jco",
+             main = "K-means Clustering Results",
+             xlab = "PC1", ylab = "PC2")
+#3 clusters seems to be the ideal number of clusters
+
+# silhouette coefficient to measure how good the k-means is
+sf_kmeans <- silhouette(kmeans_model$cluster, dist(pcs_only_numeric))
+sf_kmeans_avg <- mean(sf_kmeans[,3])
+print(sf_kmeans_avg) 
+# 0.36 is not a very good result
+# update -- 0.43 is better
+>>>>>>> 2147118 ([4]Modelling in python)

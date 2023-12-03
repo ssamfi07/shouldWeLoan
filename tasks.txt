@@ -44,6 +44,13 @@ This task involves summarizing and visualizing the data to provide valuable insi
 
             Birthdate should be converted to age of the client.
 
+            (DONE) eliminate from disp all the entries that don't have a loan (search for those account ids that appear in df_loan_trans_account)
+            remember the disp_ids with owner and disponent separately from the ones with just one owner - helpful for encoding further - 0 for owner 1 for disponent
+
+            view the card type for the account in cathegories - piechart or smth
+            
+            client background - later
+
 Task 2: Descriptive Modelling
 This task aims to apply a clustering algorithm on a set of variables that you find helpful to provide some description of the type of clients. 
 
