@@ -68,16 +68,16 @@ def pie_chart_disponents(df):
     plt.show()
 
 def pie_chart_loan_paid(df):
-    # Count the occurrences of each status for each account_id
-    status_distribution = df.groupby(['account_id', 'status']).size().unstack(fill_value=0)
+    # drop duplicate rows with regards to loan_id
+    df = df.drop_duplicates(subset='loan_id', keep='first')
+    # count the occurrences of each status for each loan_id
+    status_distribution = df.groupby(['status']).size()
 
     # Plotting the pie chart
     colors = ['lightcoral', 'lightblue']
-    # explode = (0.1, 0)  # explode the 1st slice slightly
-
     plt.figure(figsize=(8, 8))
-    plt.pie(status_distribution[1], labels=status_distribution.index, autopct='%1.1f%%', colors=colors, startangle=140)
-    plt.title('Distribution of account_ids based on Status')
+    plt.pie(status_distribution, labels=status_distribution.index, autopct='%1.1f%%', colors=colors, startangle=140)
+    plt.title('Distribution of loan_ids based on Status')
     plt.show()
 
 def distribution_trans_balance(df_loan_trans_account):
@@ -87,7 +87,7 @@ def distribution_trans_balance(df_loan_trans_account):
     avg_balance = df_loan_trans_account.groupby('account_id')['balance'].mean()
 
     # Plotting the distribution of average amount in credit transactions
-    plt.figure(figsize=(12, 6))
+    plt.figure(figsize=(18, 6))
     plt.subplot(1, 3, 1)
     plt.hist(avg_amount_credit, bins=30, color='skyblue', edgecolor='black')
     plt.title('Distribution of Average Amount in Credit Transactions')
@@ -95,7 +95,6 @@ def distribution_trans_balance(df_loan_trans_account):
     plt.ylabel('Frequency')
 
     # Plotting the distribution of average amount in credit transactions
-    plt.figure(figsize=(12, 6))
     plt.subplot(1, 3, 2)
     plt.hist(avg_amount_withdrawal, bins=30, color='skyblue', edgecolor='black')
     plt.title('Distribution of Average Amount in Withdrawal Transactions')

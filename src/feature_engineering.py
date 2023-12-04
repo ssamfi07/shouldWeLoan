@@ -67,17 +67,17 @@ def encoding_categorical(df):
     return df
 
 # outliers
-def outliers(df):
-    df_categorical = df.select_dtypes(exclude=["int64","float64"]).copy()
-    df_numerical = df.select_dtypes(exclude=["object","category"]).copy()
-    fig, axs = plt.subplots(ncols=3, nrows=4, figsize=(16, 8))
-    index = 0
-    axs = axs.flatten()
-    for k,v in df_numerical.items():
-        sns.boxplot(y=k, data=df_numerical, ax=axs[index], orient="h")
-        index += 1
-        plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=5.0)
-        plt.show()
+# def outliers(df):
+#     df_categorical = df.select_dtypes(exclude=["int64","float64"]).copy()
+#     df_numerical = df.select_dtypes(exclude=["object","category"]).copy()
+#     fig, axs = plt.subplots(ncols=3, nrows=4, figsize=(16, 8))
+#     index = 0
+#     axs = axs.flatten()
+#     for k,v in df_numerical.items():
+#         sns.boxplot(y=k, data=df_numerical, ax=axs[index], orient="h")
+#         index += 1
+#         plt.tight_layout(pad=0.4, w_pad=0.5, h_pad=5.0)
+#         plt.show()
 
 # ----------------------------------------------------------------
 #  feature selection
