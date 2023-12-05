@@ -114,7 +114,7 @@ def feature_selection(df):
     Xcat.drop("target", axis=1, inplace=True)
 
     print()
-    print("P values for numerical features:")
+    print("P values for categorical features:")
     print()
 
     # Chi-square test for independence

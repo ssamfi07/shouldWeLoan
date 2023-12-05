@@ -19,7 +19,7 @@ df_district = pd.read_csv('../bank/district.csv', sep=';', low_memory=False)
 df_trans_comp = pd.read_csv('../bank/trans_comp.csv', sep=';', low_memory=False)
 df_loans_comp = pd.read_csv('../bank/loan_comp.csv', sep=';', low_memory=False)
 
-
+# function used for the aggregated data from kaggle
 def merge_and_export_aggregated(df_trans, df_loans, fileName):
     df_trans_sorted, df_loans_sorted = utils.sort_trans_loans_by_account_id(df_trans, df_loans)
     total = utils.aggregation(df_trans_sorted, df_loans_sorted)
@@ -44,6 +44,9 @@ df_loan_trans_account = feature_engineering.transform_status_to_binary(df_loan_t
 # each account transactions and balance evolution -- commented because we have a lot of accounts
 # exploratory_plots.plot_balance_graphs(df_trans_sorted, df_loans_sorted)
 
+# accounts with disponents proportions
+exploratory_plots.pie_chart_disponents(df_loan_trans_account)
+
 # paid vs unpaid loans
 # unbalanced data: 14% of entries with loan not paid
 exploratory_plots.pie_chart_loan_paid(df_loan_trans_account)
@@ -56,24 +59,24 @@ exploratory_plots.distribution_trans_balance(df_loan_trans_account)
 # ----------------------------------------------------------------
 
 # correlations between the features and the target
-# correlations.pearson_correlation(df_loan_trans_account)
+correlations.pearson_correlation(df_loan_trans_account)
 
 # correlations between each feature
 # based on this result, we can decide which 2 features to drop from [amount_loan, payments or duration]
 # they are strongly correlated
-# correlations.spearman_correlation(df_loan_trans_account)
+correlations.spearman_correlation(df_loan_trans_account)
 
 # ----------------------------------------------------------------
 # feature selection
 # ----------------------------------------------------------------
 # feature_engineering.outliers(df_loan_trans_account)
-# df_loan_trans_account = feature_engineering.feature_selection(df_loan_trans_account)
-# df_loan_trans_account = feature_engineering.encoding_categorical(df_loan_trans_account)
-# utils.simple_export(df_loan_trans_account, "new_db.csv")
+df_loan_trans_account = feature_engineering.feature_selection(df_loan_trans_account)
+df_loan_trans_account = feature_engineering.encoding_categorical(df_loan_trans_account)
+utils.simple_export(df_loan_trans_account, "new_db.csv")
 
 # ----------------------------------------------------------------
 # modelling and evaluation
 # ----------------------------------------------------------------
 
-# modelling_v2.logistic_regression(df_loan_trans_account)
-# modelling_v2.knn(df_loan_trans_account)
+modelling_v2.logistic_regression(df_loan_trans_account)
+modelling_v2.knn(df_loan_trans_account)

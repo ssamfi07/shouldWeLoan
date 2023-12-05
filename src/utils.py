@@ -15,9 +15,6 @@ def sort_trans_loans_by_account_id(df_trans, df_loan):
 
     # Format the date to epoch time so it's easier to work with later
     df_trans_sorted['date'] = pd.to_datetime(df_trans_sorted['date'], format='%y%m%d').astype(int) // 10**9
-
-    # Replace "withdrawal in cash" with "withdrawal" for all types
-    df_trans_sorted['type'] = df_trans_sorted['type'].replace('withdrawal in cash', 'withdrawal')
     # print(df_trans_sorted)
 
     # Calculate the date difference for each transaction type within each account
@@ -41,6 +38,9 @@ def merge_trans_loans_and_drop_features(df_loans_sorted, df_trans_sorted):
     df_loan_trans_account = pd.merge(df_loans_sorted, df_trans_sorted, on='account_id', how='inner')
     # we will drop some columns -- date_x corresponds to the issuing date of the loan, it is always after the transaction history ends
     df_loan_trans_account.drop(['bank', 'account', 'operation', 'k_symbol', 'date_x', 'date_y', 'trans_id'], axis=1, inplace=True)
+
+    # Replace "withdrawal in cash" with "withdrawal" for all types
+    df_trans_sorted['type'] = df_trans_sorted['type'].replace('withdrawal in cash', 'withdrawal')
 
     # handle missing values in date_diff
     df_loan_trans_account['date_diff'].fillna(0, inplace=True)

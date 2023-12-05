@@ -81,6 +81,7 @@ def knn(df):
         k = k + 1
         knn = KNeighborsClassifier(n_neighbors = k).fit(X_train_knn, y_train_knn)
         acc = knn.score(X_test_knn, y_test_knn)
+        # get the maximum accuracy K
         if acc > max_acc:
             max_acc = acc
             best_k = k
