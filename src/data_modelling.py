@@ -54,6 +54,15 @@ exploratory_plots.pie_chart_loan_paid(df_loan_trans_account)
 # distribution of transactions and balance
 exploratory_plots.distribution_trans_balance(df_loan_trans_account)
 
+# stats
+exploratory_plots.stats("balance", df_loan_trans_account)
+
+# scatters
+exploratory_plots.scatter("amount_loan", "amount_trans", df_loan_trans_account)
+
+# barh
+exploratory_plots.bar("amount_trans", df_loan_trans_account)
+
 # ----------------------------------------------------------------
 # Correlations
 # ----------------------------------------------------------------
