@@ -5,13 +5,16 @@ import os
 # utility functions for sorting, merging, filtering and aggregating features
 # ---------------------------------------------------------------------------
 
-def sort_trans_loans_by_account_id(df_trans, df_loan):
+def sort_trans_loans_by_account_id(df_trans, df_loan=None):
     # sort by account and date
     df_trans_sorted = df_trans.sort_values(by=["account_id", "date"])
     # print(df_trans_sorted[df_trans_sorted['account_id'] == 19])
 
+    df_loans_sorted = None
+
     # sort by account and date
-    df_loans_sorted = df_loan.sort_values(by=["account_id", "date"])
+    if df_loan is not None:
+        df_loans_sorted = df_loan.sort_values(by=["account_id", "date"])
 
     # Format the date to epoch time so it's easier to work with later
     df_trans_sorted['date'] = pd.to_datetime(df_trans_sorted['date'], format='%y%m%d').astype(int) // 10**9
@@ -19,6 +22,9 @@ def sort_trans_loans_by_account_id(df_trans, df_loan):
 
     # Calculate the date difference for each transaction type within each account
     df_trans_sorted['date_diff'] = df_trans_sorted.groupby(['account_id', 'type'])['date'].diff()
+
+    # handle missing values in date_diff
+    df_trans_sorted['date_diff'].fillna(0, inplace=True)
 
     return df_trans_sorted, df_loans_sorted
 
@@ -30,6 +36,14 @@ def export_trans_loans_merge(df_trans, df_loan, file_name):
     merged.rename(columns={'amount_x': 'amount_loan', 'amount_y': 'amount_trans'}, inplace=True)
     merged.to_csv(file_name, sep=',', index=False, encoding='utf-8')
 
+def drop_features(df):
+    # we will drop some columns -- date_x corresponds to the issuing date of the loan, it is always after the transaction history ends
+    if 'date_x' and 'date_y' in df.columns:
+        df.drop(['bank', 'account', 'operation', 'k_symbol', 'date_x', 'date_y', 'trans_id'], axis=1, inplace=True)
+    elif 'date' in df.columns:
+        df.drop(['bank', 'account', 'operation', 'k_symbol', 'date', 'trans_id'], axis=1, inplace=True)
+    return df
+
 def merge_trans_loans_and_drop_features(df_loans_sorted, df_trans_sorted):
     # rename columns
     df_loans_sorted.rename(columns={'amount': 'amount_loan'}, inplace=True)
@@ -37,13 +51,10 @@ def merge_trans_loans_and_drop_features(df_loans_sorted, df_trans_sorted):
     # merge transactions with loans based on account id
     df_loan_trans_account = pd.merge(df_loans_sorted, df_trans_sorted, on='account_id', how='inner')
     # we will drop some columns -- date_x corresponds to the issuing date of the loan, it is always after the transaction history ends
-    df_loan_trans_account.drop(['bank', 'account', 'operation', 'k_symbol', 'date_x', 'date_y', 'trans_id'], axis=1, inplace=True)
+    drop_features(df_loan_trans_account)
 
     # Replace "withdrawal in cash" with "withdrawal" for all types
-    df_trans_sorted['type'] = df_trans_sorted['type'].replace('withdrawal in cash', 'withdrawal')
-
-    # handle missing values in date_diff
-    df_loan_trans_account['date_diff'].fillna(0, inplace=True)
+    df_loan_trans_account['type'] = df_loan_trans_account['type'].replace('withdrawal in cash', 'withdrawal')
 
     # maybe for amount of transaction, if the type is withdrawal we need to set the amount to the opposite value (negative)
     df_loan_trans_account['amount_trans'] = df_loan_trans_account.apply(

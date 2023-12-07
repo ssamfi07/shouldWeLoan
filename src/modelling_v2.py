@@ -32,8 +32,10 @@ seed = 42
 
 def logistic_regression(df):
     train_set_lr, test_set_lr = train_test_split(df, test_size = 0.2, random_state = seed)
+    # train data
     X_train_lr = train_set_lr.drop(['status'], axis = 1)
     y_train_lr = train_set_lr['status']
+    # test data
     X_test_lr = test_set_lr.drop(['status'], axis = 1)
     y_test_lr = test_set_lr['status']
 
@@ -57,6 +59,13 @@ def logistic_regression(df):
     tn, fp, fn, tp = confusion_matrix(y_test_lr == 1, y_preds_lr > 0.5).ravel()
     print("Confusion Matrix:")
     print(tn, fp, fn, tp)
+    return clf_lr, scaler_lr
+
+def predict_status_lr(logistic_regression_model, df):
+    # Use the trained model to predict probabilities
+    predicted_probs = logistic_regression_model.predict_proba(df)[:, 1]
+
+    return predicted_probs
 
 def knn(df):
     # dividing the dataset in train (80%) and test (20%)

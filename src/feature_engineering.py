@@ -62,6 +62,11 @@ def encoding_categorical(df):
 
     df = pd.get_dummies(df, columns=['type', 'disp'])
 
+    # for the predicted df, we check if a column doesn't exist and we fill it with zeros
+    if 'disp_no_disponent' not in df.columns:
+        df['disp_no_disponent'] = 0
+    elif 'disp_disponent' not in df.columns:
+        df['disp_disponent'] = 0
     # print(df)
 
     return df
@@ -88,40 +93,43 @@ def encoding_categorical(df):
 def feature_selection(df):
     # numerical
     df_numerical = df.select_dtypes(exclude=["object","category"]).copy()
-    Xnum = df_numerical.drop(["status"], axis= "columns")
-    ynum = df_numerical.status
+    Xnum = df_numerical
+    if 'status' in df_numerical.columns:
+        Xnum = df_numerical.drop(["status"], axis= "columns")
+        ynum = df_numerical.status
+        print("P values for numerical features:")
+        print()
 
+        # p values
+        print(pd.DataFrame(
+            [scipy.stats.pearsonr(Xnum[col], 
+            ynum) for col in Xnum.columns], 
+            columns=["Pearson Corr.", "p-value"], 
+            index=Xnum.columns,
+        ).round(4))
+
+        # categorical
+        Xcat = df.select_dtypes(exclude=['int64','float64']).copy()
+        Xcat['target'] = df.status
+        Xcat.dropna(how="any", inplace=True)
+        ycat = Xcat.target
+        Xcat.drop("target", axis=1, inplace=True)
+
+        print()
+        print("P values for categorical features:")
+        print()
+
+        # Chi-square test for independence
+        for col in Xcat.columns:
+            table = pd.crosstab(Xcat[col], ycat)
+            print(table)
+            print()
+            _, pval, _, expected_table = scipy.stats.chi2_contingency(table)
+            print(f"p-value: {pval:.25f}")
+        
     # drop ids, irrelevant
     df.drop(['account_id', 'loan_id'], axis=1, inplace=True)
 
-    print("P values for numerical features:")
-    print()
-
-    # p values
-    print(pd.DataFrame(
-        [scipy.stats.pearsonr(Xnum[col], 
-        ynum) for col in Xnum.columns], 
-        columns=["Pearson Corr.", "p-value"], 
-        index=Xnum.columns,
-    ).round(4))
+    # drop amount_trans based on the p-value evaluation for numerical features
     df.drop(['amount_trans'], axis=1, inplace=True)
-
-    # categorical
-    Xcat = df.select_dtypes(exclude=['int64','float64']).copy()
-    Xcat['target'] = df.status
-    Xcat.dropna(how="any", inplace=True)
-    ycat = Xcat.target
-    Xcat.drop("target", axis=1, inplace=True)
-
-    print()
-    print("P values for categorical features:")
-    print()
-
-    # Chi-square test for independence
-    for col in Xcat.columns:
-        table = pd.crosstab(Xcat[col], ycat)
-        print(table)
-        print()
-        _, pval, _, expected_table = scipy.stats.chi2_contingency(table)
-        print(f"p-value: {pval:.25f}")
     return df
