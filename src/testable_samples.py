@@ -3,12 +3,8 @@ import pandas as pd
 import exploratory_plots
 import utils
 
-# read the input data csv files
-df_account = pd.read_csv('../bank/account.csv', sep=';', low_memory=False)
-df_disp = pd.read_csv('../bank/disp.csv', sep=';', low_memory=False)
+# read the input data csv files with transactions
 df_trans = pd.read_csv('../bank/trans_dev.csv', sep=';', low_memory=False)
-df_loan = pd.read_csv('../bank/loan_dev.csv', sep=';', low_memory=False)
-df_district = pd.read_csv('../bank/district.csv', sep=';', low_memory=False)
 
 # !!! make sure that the account_ids are valid before trying to export
 # !!! because the accounts have to match the amount_loan, duration and payments for the loan

@@ -28,16 +28,19 @@ def merge_and_export_aggregated(df_trans, df_loans, fileName):
     utils.simple_export(total, fileName)
     print(total)
 
+def select_pred_account(account_id):
+    df_predict_account = pd.read_csv('../csv_exports/account_id'+ str(account_id) + '.csv', sep=',', low_memory=False)
+    return df_predict_account
+
 df_trans_sorted, df_loans_sorted = utils.sort_trans_loans_by_account_id(df_trans, df_loan)
 # data we want to predict the status for - it should have the correct features
-df_predict_account_x = pd.read_csv('../csv_exports/account_id1.csv', sep=',', low_memory=False)
+df_predict_account_x = select_pred_account(6)
 
 # drop irrelevant features
 df_loan_trans_account = utils.merge_trans_loans_and_drop_features(df_loans_sorted, df_trans_sorted)
 df_predict_account_x = utils.drop_features(df_predict_account_x)
 # handle missing values in column date_diff for the prediction db
 df_predict_account_x['date_diff'].fillna(0, inplace=True)
-utils.simple_export(df_predict_account_x, "test.csv")
 
 # find the disponent information
 accounts_with_disponent = utils.accounts_with_disponents(df_loan_trans_account, df_disp)
