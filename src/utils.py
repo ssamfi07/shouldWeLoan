@@ -56,11 +56,6 @@ def merge_trans_loans_and_drop_features(df_loans_sorted, df_trans_sorted):
     # Replace "withdrawal in cash" with "withdrawal" for all types
     df_loan_trans_account['type'] = df_loan_trans_account['type'].replace('withdrawal in cash', 'withdrawal')
 
-    # maybe for amount of transaction, if the type is withdrawal we need to set the amount to the opposite value (negative)
-    df_loan_trans_account['amount_trans'] = df_loan_trans_account.apply(
-        lambda row: -row['amount_trans'] if row['type'] == 'withdrawal' else row['amount_trans'],
-        axis=1)
-
     return df_loan_trans_account
 
 def simple_export(df, fileName):

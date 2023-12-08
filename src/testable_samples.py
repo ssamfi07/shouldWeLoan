@@ -12,7 +12,7 @@ df_trans = pd.read_csv('../bank/trans_dev.csv', sep=';', low_memory=False)
 # loan_id it's a list of lists
 # account_id (identifier), loan_id, amount_loan, duration, payments
 loan_info = {
-    1: [1234, 95000, 24, 3958,333333333],
+    1: [1234, 80000, 24, 3750],
     4: [5678, 30000, 24, 1250],
     6: [91011, 40000, 24, 1666,66]
 }
@@ -26,6 +26,7 @@ def create_testable_dbs_based_on_account_ids_and_loan_info(df, account_ids, loan
     filtered_df = df_trans_sorted[df_trans_sorted['account_id'].isin(account_ids)]
     filtered_df.rename(columns={'amount': 'amount_trans'}, inplace=True)
     # add for each row the corresponding loan_id, amount_loan, duration and payments
+    # add loan_id, amount_loan, duration and payments for each row
     for index, row in filtered_df.iterrows():
         account_id = row['account_id']
         if account_id in account_ids:
@@ -38,7 +39,6 @@ def create_testable_dbs_based_on_account_ids_and_loan_info(df, account_ids, loan
     for account_id in account_ids:
         account_df = filtered_df[filtered_df['account_id'] == account_id]
         file_path = f"{file_name}_id{account_id}.csv"
-        # add loan_id, amount_loan, duration and payments for each row
         utils.simple_export(account_df, file_path)
         print(f"Exported DataFrame for account_id {account_id} to {file_path}")
 

@@ -11,13 +11,19 @@ import scipy
 
 # returns a DataFrame with means and stds for balance and amounts, and the no of transactions
 def aggregation(df_loan_trans_account):
+    # maybe for amount of transaction, if the type is withdrawal we need to set the amount to the opposite value (negative)
+    df_loan_trans_account['amount_trans'] = df_loan_trans_account.apply(
+        lambda row: -row['amount_trans'] if row['type'] == 'withdrawal' else row['amount_trans'],
+        axis=1)
     # Aggregating transaction-level data to the loan level
     loan_data = df_loan_trans_account.groupby(['loan_id', 'account_id'])[['amount_trans', 'balance']].agg({
-        'amount_trans': ['std', 'mean', 'count', lambda x: np.abs(x[x < 0].sum())],
+        'amount_trans': ['std', 'mean', 'count', lambda x: np.abs(x[x < 0].sum()), lambda x: np.abs(np.mean(x[x < 0])) if (x < 0).any() else 0],
         'balance': ['std','mean']
     }).reset_index()
 
-    loan_data.columns = ['loan_id', 'account_id', 'amount_std', 'amount_mean', 'num_transactions', 'total_withdrawn', 'balance_std', 'balance_mean']
+    print(loan_data)
+
+    loan_data.columns = ['loan_id', 'account_id', 'amount_std', 'amount_mean', 'num_transactions', 'total_withdrawn', 'average_withdrawn', 'balance_std', 'balance_mean']
 
     # rename column to correct description
     df_loan_trans_account.rename(columns={'amount_y': 'amount_loan'}, inplace=True)
@@ -46,13 +52,14 @@ def transform_status_to_binary(df_loan_trans_account):
         axis=1)
     return df_loan_trans_account
 
+# disp transformation to binary
 def transform_disponent_to_binary(df_loan_trans_account):
     df_loan_trans_account['disp'] = df_loan_trans_account.apply(
         lambda row: 1 if row['disp'] == "disponent" else 0,
         axis=1)
     return df_loan_trans_account
 
-# type and disp columns one hot encoded
+# type and disp columns binary encoded
 def encoding_categorical(df):
     if 'type' in df.columns:
         df_type = df.type
@@ -74,10 +81,10 @@ def encoding_categorical(df):
         transform_disponent_to_binary(df)
 
     # for the predicted df, we check if a column doesn't exist and we fill it with zeros
-    if 'disp_no_disponent' not in df.columns:
-        df['disp_no_disponent'] = 0
-    elif 'disp_disponent' not in df.columns:
-        df['disp_disponent'] = 0
+    # if 'disp_no_disponent' not in df.columns:
+    #     df['disp_no_disponent'] = 0
+    # elif 'disp_disponent' not in df.columns:
+    #     df['disp_disponent'] = 0
     # print(df)
 
     return df
@@ -140,6 +147,9 @@ def feature_selection(df):
         
     # drop ids, irrelevant
     df.drop(['account_id'], axis=1, inplace=True)
+
+    # drop amount_std and amount_mean
+    df.drop(['amount_std', 'amount_mean'], axis=1, inplace=True)
 
     # drop amount_trans based on the p-value evaluation for numerical features
     if 'amount' in df.columns:

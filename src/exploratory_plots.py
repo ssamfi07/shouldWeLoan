@@ -14,7 +14,7 @@ def plot_balance_graphs(df_trans_sorted, df_loans_sorted):
             # print(df_account)
 
             # Plot 2: Amount with different colors for each type of operation - deposit or expenditure
-            # plt.figure(figsize=(12, 8))
+            plt.figure(figsize=(12, 8))
             colors = {'credit in cash': 'green', 'withdrawal in cash': 'red',
                     'collection from another bank': 'blue', 'remittance from another bank': 'orange', 'NaN': 'gray'}
 
@@ -50,7 +50,7 @@ def plot_balance_graphs(df_trans_sorted, df_loans_sorted):
                 # gather all the transactions with no loan
                 plt.title('Amount with Different Colors for Each Type of Operation for account_id == ' + str(account) + "NO LOAN")
                 # print(account)
-                df_accounts_without_loan = pd.concat([df_accounts_without_loan, df_account], ignore_index=True, sort=False)
+                # df_accounts_without_loan = pd.concat([df_accounts_without_loan, df_account], ignore_index=True, sort=False)
 
             plt.xlabel('Date')
             plt.ylabel('Amount')

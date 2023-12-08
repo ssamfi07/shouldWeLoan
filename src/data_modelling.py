@@ -57,8 +57,8 @@ df_loan_trans_account = feature_engineering.transform_status_to_binary(df_loan_t
 # ----------------------------------------------------------------
 
 # each account transactions and balance evolution -- commented because we have a lot of accounts
-df_accounts_with_no_loan = exploratory_plots.plot_balance_graphs(df_trans_sorted, df_loans_sorted)
-utils.simple_export(df_accounts_with_no_loan, "accounts_with_no_loan.csv")
+# df_accounts_with_no_loan = exploratory_plots.plot_balance_graphs(df_trans_sorted, df_loans_sorted)
+# utils.simple_export(df_accounts_with_no_loan, "accounts_with_no_loan.csv")
 
 # accounts with disponents proportions
 # exploratory_plots.pie_chart_disponents(df_loan_trans_account)
@@ -92,17 +92,19 @@ df_predict_account_x = feature_engineering.aggregation(df_predict_account_x)
 df_loan_trans_account = feature_engineering.add_disponent_info_to_loan_trans(df_loan_trans_account, accounts_with_disponent)
 df_predict_account_x = feature_engineering.add_disponent_info_to_loan_trans(df_predict_account_x, new_accounts_with_disponent)
 
+print(df_predict_account_x)
+
 # ----------------------------------------------------------------
 # Correlations
 # ----------------------------------------------------------------
 
 # correlations between the features and the target
-# correlations.pearson_correlation(df_loan_trans_account)
+correlations.pearson_correlation(df_loan_trans_account)
 
 # correlations between each feature
 # based on this result, we can decide which 2 features to drop from [amount_loan, payments or duration]
 # they are strongly correlated
-# correlations.spearman_correlation(df_loan_trans_account)
+correlations.spearman_correlation(df_loan_trans_account)
 
 df_loan_trans_account = feature_engineering.feature_selection(df_loan_trans_account)
 df_loan_trans_account = feature_engineering.encoding_categorical(df_loan_trans_account)

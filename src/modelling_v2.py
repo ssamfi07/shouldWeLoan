@@ -53,7 +53,7 @@ def logistic_regression(df):
 
     y_preds_lr = clf_lr.predict_proba(X_test_lr)[:,1]
 
-    # auc_roc_plot(y_test_lr, y_preds_lr)
+    auc_roc_plot(y_test_lr, y_preds_lr)
 
     # confusion matrix
     tn, fp, fn, tp = confusion_matrix(y_test_lr == 1, y_preds_lr > 0.5).ravel()

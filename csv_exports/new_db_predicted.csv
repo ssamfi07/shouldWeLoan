@@ -1,0 +1,2 @@
+loan_id,num_transactions,total_withdrawn,average_withdrawn,balance_std,balance_mean,amount_loan,duration,disp
+1234.0,113,86970.20000000001,1380.4793650793652,4168.729384185478,17558.7,80000.0,24.0,0
