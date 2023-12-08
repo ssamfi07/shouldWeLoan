@@ -1,40 +1,40 @@
-trans_id,account_id,date,type,operation,amount_trans,balance,k_symbol,bank,account,date_diff,loan_id,amount_loan,duration,payments
-1017,4,824860800,credit,credit in cash,800.0,800.0,,,,0.0,5678.0,150000.0,24.0,1250.0
-1020,4,826502400,credit,collection from another bank,5553.0,6353.0,old-age pension,UV,89899795.0,1641600.0,5678.0,150000.0,24.0,1250.0
-1021,4,829180800,credit,collection from another bank,5553.0,11906.0,old-age pension,UV,89899795.0,2678400.0,5678.0,150000.0,24.0,1250.0
-1022,4,831772800,credit,collection from another bank,5553.0,17459.0,old-age pension,UV,89899795.0,2592000.0,5678.0,150000.0,24.0,1250.0
-1023,4,834451200,credit,collection from another bank,5553.0,23012.0,old-age pension,UV,89899795.0,2678400.0,5678.0,150000.0,24.0,1250.0
-1024,4,837043200,credit,collection from another bank,5553.0,28565.0,old-age pension,UV,89899795.0,2592000.0,5678.0,150000.0,24.0,1250.0
-1096,4,837216000,withdrawal,remittance to another bank,1285.0,27280.0, ,UV,5848086.0,0.0,5678.0,150000.0,24.0,1250.0
-1199,4,837820800,withdrawal,withdrawal in cash,1900.0,25380.0,,,,604800.0,5678.0,150000.0,24.0,1250.0
-1170,4,838771200,withdrawal,withdrawal in cash,14.6,25432.0,payment for statement,,,950400.0,5678.0,150000.0,24.0,1250.0
-3530571,4,838771200,credit,,66.6,25446.6,interest credited,,,1728000.0,5678.0,150000.0,24.0,1250.0
-1061,4,839289600,withdrawal,remittance to another bank,2078.0,23354.0,household,UV,26693541.0,518400.0,5678.0,150000.0,24.0,1250.0
-1025,4,839721600,credit,collection from another bank,5553.0,28907.0,old-age pension,UV,89899795.0,950400.0,5678.0,150000.0,24.0,1250.0
-1097,4,839894400,withdrawal,remittance to another bank,1285.0,27622.0, ,UV,5848086.0,604800.0,5678.0,150000.0,24.0,1250.0
-1200,4,840412800,withdrawal,withdrawal in cash,4100.0,23522.0,,,,518400.0,5678.0,150000.0,24.0,1250.0
-1171,4,841449600,withdrawal,withdrawal in cash,14.6,23612.7,payment for statement,,,1036800.0,5678.0,150000.0,24.0,1250.0
-3530572,4,841449600,credit,,105.3,23627.3,interest credited,,,1728000.0,5678.0,150000.0,24.0,1250.0
-1062,4,841968000,withdrawal,remittance to another bank,2078.0,21534.7,household,UV,26693541.0,518400.0,5678.0,150000.0,24.0,1250.0
-1026,4,842400000,credit,collection from another bank,5553.0,27087.7,old-age pension,UV,89899795.0,950400.0,5678.0,150000.0,24.0,1250.0
-1098,4,842572800,withdrawal,remittance to another bank,1285.0,25802.7, ,UV,5848086.0,604800.0,5678.0,150000.0,24.0,1250.0
-1201,4,843004800,withdrawal,withdrawal in cash,3300.0,22502.7,,,,432000.0,5678.0,150000.0,24.0,1250.0
-1172,4,844041600,withdrawal,withdrawal in cash,14.6,22587.0,payment for statement,,,1036800.0,5678.0,150000.0,24.0,1250.0
-3530573,4,844041600,credit,,98.9,22601.6,interest credited,,,1641600.0,5678.0,150000.0,24.0,1250.0
-1063,4,844560000,withdrawal,remittance to another bank,2078.0,20509.0,household,UV,26693541.0,518400.0,5678.0,150000.0,24.0,1250.0
-1027,4,844992000,credit,collection from another bank,5553.0,26062.0,old-age pension,UV,89899795.0,950400.0,5678.0,150000.0,24.0,1250.0
-1099,4,845164800,withdrawal,remittance to another bank,1285.0,24777.0, ,UV,5848086.0,604800.0,5678.0,150000.0,24.0,1250.0
-1173,4,846720000,withdrawal,withdrawal in cash,14.6,24863.0,payment for statement,,,1555200.0,5678.0,150000.0,24.0,1250.0
-3530574,4,846720000,credit,,100.6,24877.6,interest credited,,,1728000.0,5678.0,150000.0,24.0,1250.0
-1064,4,847238400,withdrawal,remittance to another bank,2078.0,22785.0,household,UV,26693541.0,518400.0,5678.0,150000.0,24.0,1250.0
-1028,4,847670400,credit,collection from another bank,5553.0,28338.0,old-age pension,UV,89899795.0,950400.0,5678.0,150000.0,24.0,1250.0
-1100,4,847843200,withdrawal,remittance to another bank,1285.0,27053.0, ,UV,5848086.0,604800.0,5678.0,150000.0,24.0,1250.0
-1174,4,849312000,withdrawal,withdrawal in cash,14.6,27148.5,payment for statement,,,1468800.0,5678.0,150000.0,24.0,1250.0
-3530575,4,849312000,credit,,110.0,27163.1,interest credited,,,1641600.0,5678.0,150000.0,24.0,1250.0
-1065,4,849830400,withdrawal,remittance to another bank,2078.0,25070.5,household,UV,26693541.0,518400.0,5678.0,150000.0,24.0,1250.0
-1029,4,850262400,credit,collection from another bank,5553.0,30623.5,old-age pension,UV,89899795.0,950400.0,5678.0,150000.0,24.0,1250.0
-1153,4,850348800,withdrawal,withdrawal in cash,3040.0,27583.5,,,,518400.0,5678.0,150000.0,24.0,1250.0
-1101,4,850435200,withdrawal,remittance to another bank,1285.0,26298.5, ,UV,5848086.0,86400.0,5678.0,150000.0,24.0,1250.0
-1132,4,851040000,withdrawal,withdrawal in cash,1450.0,24848.5,,,,604800.0,5678.0,150000.0,24.0,1250.0
-1175,4,851990400,withdrawal,withdrawal in cash,14.6,24943.0,payment for statement,,,950400.0,5678.0,150000.0,24.0,1250.0
-3530576,4,851990400,credit,,109.1,24957.6,interest credited,,,1728000.0,5678.0,150000.0,24.0,1250.0
+trans_id,account_id,date,type,operation,amount_trans,balance,k_symbol,bank,account,loan_id,amount_loan,duration,payments
+1017,4,824860800,credit,credit in cash,800.0,800.0,,,,5678.0,150000.0,24.0,1250.0
+1020,4,826502400,credit,collection from another bank,5553.0,6353.0,old-age pension,UV,89899795.0,5678.0,150000.0,24.0,1250.0
+1021,4,829180800,credit,collection from another bank,5553.0,11906.0,old-age pension,UV,89899795.0,5678.0,150000.0,24.0,1250.0
+1022,4,831772800,credit,collection from another bank,5553.0,17459.0,old-age pension,UV,89899795.0,5678.0,150000.0,24.0,1250.0
+1023,4,834451200,credit,collection from another bank,5553.0,23012.0,old-age pension,UV,89899795.0,5678.0,150000.0,24.0,1250.0
+1024,4,837043200,credit,collection from another bank,5553.0,28565.0,old-age pension,UV,89899795.0,5678.0,150000.0,24.0,1250.0
+1096,4,837216000,withdrawal,remittance to another bank,1285.0,27280.0, ,UV,5848086.0,5678.0,150000.0,24.0,1250.0
+1199,4,837820800,withdrawal,withdrawal in cash,1900.0,25380.0,,,,5678.0,150000.0,24.0,1250.0
+1170,4,838771200,withdrawal,withdrawal in cash,14.6,25432.0,payment for statement,,,5678.0,150000.0,24.0,1250.0
+3530571,4,838771200,credit,,66.6,25446.6,interest credited,,,5678.0,150000.0,24.0,1250.0
+1061,4,839289600,withdrawal,remittance to another bank,2078.0,23354.0,household,UV,26693541.0,5678.0,150000.0,24.0,1250.0
+1025,4,839721600,credit,collection from another bank,5553.0,28907.0,old-age pension,UV,89899795.0,5678.0,150000.0,24.0,1250.0
+1097,4,839894400,withdrawal,remittance to another bank,1285.0,27622.0, ,UV,5848086.0,5678.0,150000.0,24.0,1250.0
+1200,4,840412800,withdrawal,withdrawal in cash,4100.0,23522.0,,,,5678.0,150000.0,24.0,1250.0
+1171,4,841449600,withdrawal,withdrawal in cash,14.6,23612.7,payment for statement,,,5678.0,150000.0,24.0,1250.0
+3530572,4,841449600,credit,,105.3,23627.3,interest credited,,,5678.0,150000.0,24.0,1250.0
+1062,4,841968000,withdrawal,remittance to another bank,2078.0,21534.7,household,UV,26693541.0,5678.0,150000.0,24.0,1250.0
+1026,4,842400000,credit,collection from another bank,5553.0,27087.7,old-age pension,UV,89899795.0,5678.0,150000.0,24.0,1250.0
+1098,4,842572800,withdrawal,remittance to another bank,1285.0,25802.7, ,UV,5848086.0,5678.0,150000.0,24.0,1250.0
+1201,4,843004800,withdrawal,withdrawal in cash,3300.0,22502.7,,,,5678.0,150000.0,24.0,1250.0
+1172,4,844041600,withdrawal,withdrawal in cash,14.6,22587.0,payment for statement,,,5678.0,150000.0,24.0,1250.0
+3530573,4,844041600,credit,,98.9,22601.6,interest credited,,,5678.0,150000.0,24.0,1250.0
+1063,4,844560000,withdrawal,remittance to another bank,2078.0,20509.0,household,UV,26693541.0,5678.0,150000.0,24.0,1250.0
+1027,4,844992000,credit,collection from another bank,5553.0,26062.0,old-age pension,UV,89899795.0,5678.0,150000.0,24.0,1250.0
+1099,4,845164800,withdrawal,remittance to another bank,1285.0,24777.0, ,UV,5848086.0,5678.0,150000.0,24.0,1250.0
+1173,4,846720000,withdrawal,withdrawal in cash,14.6,24863.0,payment for statement,,,5678.0,150000.0,24.0,1250.0
+3530574,4,846720000,credit,,100.6,24877.6,interest credited,,,5678.0,150000.0,24.0,1250.0
+1064,4,847238400,withdrawal,remittance to another bank,2078.0,22785.0,household,UV,26693541.0,5678.0,150000.0,24.0,1250.0
+1028,4,847670400,credit,collection from another bank,5553.0,28338.0,old-age pension,UV,89899795.0,5678.0,150000.0,24.0,1250.0
+1100,4,847843200,withdrawal,remittance to another bank,1285.0,27053.0, ,UV,5848086.0,5678.0,150000.0,24.0,1250.0
+1174,4,849312000,withdrawal,withdrawal in cash,14.6,27148.5,payment for statement,,,5678.0,150000.0,24.0,1250.0
+3530575,4,849312000,credit,,110.0,27163.1,interest credited,,,5678.0,150000.0,24.0,1250.0
+1065,4,849830400,withdrawal,remittance to another bank,2078.0,25070.5,household,UV,26693541.0,5678.0,150000.0,24.0,1250.0
+1029,4,850262400,credit,collection from another bank,5553.0,30623.5,old-age pension,UV,89899795.0,5678.0,150000.0,24.0,1250.0
+1153,4,850348800,withdrawal,withdrawal in cash,3040.0,27583.5,,,,5678.0,150000.0,24.0,1250.0
+1101,4,850435200,withdrawal,remittance to another bank,1285.0,26298.5, ,UV,5848086.0,5678.0,150000.0,24.0,1250.0
+1132,4,851040000,withdrawal,withdrawal in cash,1450.0,24848.5,,,,5678.0,150000.0,24.0,1250.0
+1175,4,851990400,withdrawal,withdrawal in cash,14.6,24943.0,payment for statement,,,5678.0,150000.0,24.0,1250.0
+3530576,4,851990400,credit,,109.1,24957.6,interest credited,,,5678.0,150000.0,24.0,1250.0

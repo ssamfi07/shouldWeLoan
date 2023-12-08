@@ -35,17 +35,12 @@ def select_pred_account(account_id):
 
 df_trans_sorted, df_loans_sorted = utils.sort_trans_loans_by_account_id(df_trans, df_loan)
 
-# dictionary with accounts on which we will do the predictions
-df_predict_account = {}
-
 # drop irrelevant features
 df_loan_trans_account = utils.merge_trans_loans_and_drop_features(df_loans_sorted, df_trans_sorted)
 
 # find the disponent information
 accounts_with_disponent = utils.accounts_with_disponents(df_loan_trans_account, df_disp)
 
-# for predicted we don't need because we want to fill it
-# but we can create the column
 df_loan_trans_account = feature_engineering.transform_status_to_binary(df_loan_trans_account)
 
 # simple_export(df_loan_trans_account, "new_db.csv")
@@ -116,6 +111,8 @@ trained_lr_model, scaler = modelling_v2.logistic_regression(df_loan_trans_accoun
 # process prediction datasets and make the predictions
 # ----------------------------------------------------------------
 
+# !!! individual accounts from the dictionary
+"""
 for predict_account in testable_samples.loan_info:
     print(predict_account)
     df_predict = select_pred_account(predict_account)
@@ -123,7 +120,7 @@ for predict_account in testable_samples.loan_info:
     df_predict_account[predict_account] = df_predict
     # print(df_predict_account[predict_account])
     # drop features
-    df_predict_account[predict_account] = utils.drop_features(df_predict_account[predict_account])
+    df_predict_account[predict_account] = utils.drop_features_and_rename(df_predict_account[predict_account])
     # aggregation
     df_predict_account[predict_account] = feature_engineering.aggregation(df_predict_account[predict_account])
     # find and add disponent info
@@ -137,3 +134,44 @@ for predict_account in testable_samples.loan_info:
     # predict and print
     predictions = modelling_v2.predict_status_lr(trained_lr_model, df_predict_account[predict_account])
     print(predictions)
+"""
+
+# ----------------------------------------------------------------
+# process the accounts without loan
+# ----------------------------------------------------------------
+
+accounts_without_loans = utils.account_without_loan(df_trans_sorted, df_loans_sorted)
+accounts_without_loans = utils.drop_features_and_rename(accounts_without_loans)
+
+# aggregate accounts without loan
+accounts_without_loans = feature_engineering.aggregation(accounts_without_loans, no_loan_id=1)
+
+# !!! these are outliers which affect our predictions
+# filter out rows with num_transactions less than 10
+accounts_without_loans = accounts_without_loans[accounts_without_loans['num_transactions'] >= 10]
+# filter out rows with less than 3 transactions per month
+accounts_without_loans = accounts_without_loans[(accounts_without_loans['num_transactions'] / accounts_without_loans['date_diff']) >= 3]
+
+loan_info = testable_samples.calculate_amount_loan_and_duration(accounts_without_loans)
+accounts_without_loan = testable_samples.add_amount_loan_and_duration_to_df(accounts_without_loans, loan_info)
+
+# filter out rows with negative amount_loan -- formula works for balanced transactions
+accounts_without_loans = accounts_without_loans[(accounts_without_loans['amount_loan'] >= 0)]
+
+# disponents addition
+accounts_without_loans = feature_engineering.add_disponent_info_to_loan_trans(accounts_without_loans, accounts_with_disponent)
+
+# feature selection and encoding
+accounts_without_loans = feature_engineering.feature_selection(accounts_without_loans)
+accounts_without_loans = feature_engineering.encoding_categorical(accounts_without_loans)
+
+# ----------------------------------------------------------------
+# predictions for the accounts_without_loan
+# ----------------------------------------------------------------
+
+predictions = modelling_v2.predict_status_lr(trained_lr_model, accounts_without_loans)
+print(predictions)
+
+# add the preditions to the status column for accounts_without_loans
+accounts_without_loans['status'] = predictions.astype(int)
+utils.simple_export(accounts_without_loans, "accounts_with_no_loans.csv")

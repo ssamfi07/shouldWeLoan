@@ -1,4 +1,6 @@
 import pandas as pd
+import numpy as np
+from scipy.spatial.distance import cdist
 
 import exploratory_plots
 import utils
@@ -17,6 +19,8 @@ loan_info = {
     4: [5678, 150000, 24, 1250],
     6: [91011, 210000, 24, 1666,66]
 }
+
+# !!! magic formula: amount_loan ~ (balance_mean - 2*balance_std) * (closest value of date diff to [12, 24, 48, 60])
 
 # identifiers for loan_info
 account_ids = [1, 4, 6]
@@ -43,4 +47,38 @@ def create_testable_dbs_based_on_account_ids_and_loan_info(df, account_ids, loan
         utils.simple_export(account_df, file_path)
         print(f"Exported DataFrame for account_id {account_id} to {file_path}")
 
-create_testable_dbs_based_on_account_ids_and_loan_info(df_trans, account_ids, loan_info, "account")
+# the dataframe is the one with accounts without loans
+def calculate_amount_loan_and_duration(df):
+    # Define the reference values for date_diff
+    ref_date_diff = np.array([12, 24, 48, 60])
+
+    # Function to find the closest value in an array
+    def find_closest_value(x, values):
+        return values[np.argmin(np.abs(x - values))]
+    # Create loan_info dictionary
+    loan_info = {}
+    for index, row in df.iterrows():
+        account_id = row['account_id']
+        balance_mean = row['balance_mean']
+        balance_std = row['balance_std']
+        date_diff = row['date_diff']
+
+        # Calculate the closest value for date_diff
+        closest_date_diff = find_closest_value(date_diff, ref_date_diff)
+
+        # Calculate the elements for the dictionary
+        element1 = (balance_mean - 2 * balance_std) * date_diff
+        element2 = closest_date_diff
+        element3 = 0
+
+        # Add the entry to the loan_info dictionary
+        loan_info[account_id] = [element1, element2, element3]
+    return loan_info
+
+def add_amount_loan_and_duration_to_df(df, loan_info):
+    df['loan_id'] = df['account_id']
+    df['amount_loan'] = df['account_id'].map(lambda x: loan_info[x][0])
+    df['duration'] = df['account_id'].map(lambda x: loan_info[x][1])
+    return df
+
+# create_testable_dbs_based_on_account_ids_and_loan_info(df_trans, account_ids, loan_info, "account")

@@ -11,7 +11,7 @@ import scipy
 # ----------------------------------------------------------------
 
 # returns a DataFrame with means and stds for balance and amounts, and the no of transactions
-def aggregation(df_loan_trans_account):
+def aggregation(df_loan_trans_account, no_loan_id=0):
     # maybe for amount of transaction, if the type is withdrawal we need to set the amount to the opposite value (negative)
     df_loan_trans_account['amount_trans'] = df_loan_trans_account.apply(
         lambda row: -row['amount_trans'] if row['type'] == 'withdrawal' else row['amount_trans'],
@@ -24,12 +24,19 @@ def aggregation(df_loan_trans_account):
     date_diff_per_account['date'] = date_diff_per_account['date'] // seconds_in_a_month
     # print(date_diff_per_account)
     # Aggregating transaction-level data to the loan level
-    loan_data = df_loan_trans_account.groupby(['loan_id', 'account_id'])[['amount_trans', 'balance']].agg({
+    if no_loan_id == 0:
+        identifier_list = ['loan_id', 'account_id']
+        identifier_columns = ['loan_id', 'account_id', 'amount_std', 'amount_mean', 'num_transactions', 'total_withdrawn', 'average_withdrawn', 'balance_std', 'balance_mean']
+    else:
+        identifier_list = ['account_id']
+        identifier_columns = ['account_id', 'amount_std', 'amount_mean', 'num_transactions', 'total_withdrawn', 'average_withdrawn', 'balance_std', 'balance_mean']
+
+    loan_data = df_loan_trans_account.groupby(identifier_list)[['amount_trans', 'balance']].agg({
         'amount_trans': ['std', 'mean', 'count', lambda x: np.abs(x[x < 0].sum()), lambda x: np.abs(np.mean(x[x < 0])) if (x < 0).any() else 0],
         'balance': ['std','mean']
     }).reset_index()
 
-    loan_data.columns = ['loan_id', 'account_id', 'amount_std', 'amount_mean', 'num_transactions', 'total_withdrawn', 'average_withdrawn', 'balance_std', 'balance_mean']
+    loan_data.columns = identifier_columns
 
     # add the date difference between the last and the first transaction for each account
     loan_data['date_diff'] = date_diff_per_account['date']
@@ -40,10 +47,12 @@ def aggregation(df_loan_trans_account):
     # Create a DataFrame with unique values for each loan_id
     if 'status' in df_loan_trans_account.columns:
         unique_loan_info = df_loan_trans_account[['loan_id', 'amount_loan', 'duration', 'status']].drop_duplicates()
-    else: # for data we want tp predict, status is missing
+        # Merge loan_data with unique_loan_info based on loan_id
+        loan_data = pd.merge(loan_data, unique_loan_info, on='loan_id', how='left')
+    elif no_loan_id == 0: # for data we want t0 predict, status is missing
         unique_loan_info = df_loan_trans_account[['loan_id', 'amount_loan', 'duration']].drop_duplicates()
-    # Merge loan_data with unique_loan_info based on loan_id
-    loan_data = pd.merge(loan_data, unique_loan_info, on='loan_id', how='left')
+        # Merge loan_data with unique_loan_info based on loan_id
+        loan_data = pd.merge(loan_data, unique_loan_info, on='loan_id', how='left')
 
     return loan_data
 
