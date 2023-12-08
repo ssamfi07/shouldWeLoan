@@ -11,10 +11,11 @@ df_trans = pd.read_csv('../bank/trans_dev.csv', sep=';', low_memory=False)
 # loan_info structure:
 # loan_id it's a list of lists
 # account_id (identifier), loan_id, amount_loan, duration, payments
+# the amount_loan needs to barely surpass a threshold which enables the prediction of status 0
 loan_info = {
-    1: [1234, 80000, 24, 3750],
-    4: [5678, 30000, 24, 1250],
-    6: [91011, 40000, 24, 1666,66]
+    1: [12345, 120000, 24, 3333,3333],
+    4: [5678, 150000, 24, 1250],
+    6: [91011, 210000, 24, 1666,66]
 }
 
 # identifiers for loan_info

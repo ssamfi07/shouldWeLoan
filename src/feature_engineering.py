@@ -1,6 +1,7 @@
 
 import pandas as pd
 import numpy as np
+from datetime import datetime
 from category_encoders import BinaryEncoder
 
 import scipy
@@ -15,15 +16,23 @@ def aggregation(df_loan_trans_account):
     df_loan_trans_account['amount_trans'] = df_loan_trans_account.apply(
         lambda row: -row['amount_trans'] if row['type'] == 'withdrawal' else row['amount_trans'],
         axis=1)
+    # print(df_loan_trans_account.columns)
+    # calculate for each account the difference between the last and the first transaction timestamp
+    date_diff_per_account = df_loan_trans_account.groupby('account_id')['date'].agg(lambda x: (x.max() - x.min())).reset_index()
+    # translate the date values from epoch time into months
+    seconds_in_a_month = 30 * 24 * 60 * 60
+    date_diff_per_account['date'] = date_diff_per_account['date'] // seconds_in_a_month
+    # print(date_diff_per_account)
     # Aggregating transaction-level data to the loan level
     loan_data = df_loan_trans_account.groupby(['loan_id', 'account_id'])[['amount_trans', 'balance']].agg({
         'amount_trans': ['std', 'mean', 'count', lambda x: np.abs(x[x < 0].sum()), lambda x: np.abs(np.mean(x[x < 0])) if (x < 0).any() else 0],
         'balance': ['std','mean']
     }).reset_index()
 
-    print(loan_data)
-
     loan_data.columns = ['loan_id', 'account_id', 'amount_std', 'amount_mean', 'num_transactions', 'total_withdrawn', 'average_withdrawn', 'balance_std', 'balance_mean']
+
+    # add the date difference between the last and the first transaction for each account
+    loan_data['date_diff'] = date_diff_per_account['date']
 
     # rename column to correct description
     df_loan_trans_account.rename(columns={'amount_y': 'amount_loan'}, inplace=True)
@@ -146,10 +155,10 @@ def feature_selection(df):
             print(f"p-value: {pval:.25f}")
         
     # drop ids, irrelevant
-    df.drop(['account_id'], axis=1, inplace=True)
+    df.drop(['account_id', 'loan_id'], axis=1, inplace=True)
 
-    # drop amount_std and amount_mean
-    df.drop(['amount_std', 'amount_mean'], axis=1, inplace=True)
+    # drop amount_std and amount_mean and total_withdrawn
+    df.drop(['num_transactions', 'total_withdrawn', 'amount_mean', 'amount_std'], axis=1, inplace=True)
 
     # drop amount_trans based on the p-value evaluation for numerical features
     if 'amount' in df.columns:

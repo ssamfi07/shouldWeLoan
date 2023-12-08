@@ -39,9 +39,8 @@ def export_trans_loans_merge(df_trans, df_loan, file_name):
 def drop_features(df):
     # we will drop some columns -- date_x corresponds to the issuing date of the loan, it is always after the transaction history ends
     if 'date_x' and 'date_y' in df.columns:
-        df.drop(['bank', 'account', 'operation', 'k_symbol', 'date_x', 'date_y', 'trans_id'], axis=1, inplace=True)
-    elif 'date' in df.columns:
-        df.drop(['bank', 'account', 'operation', 'k_symbol', 'date', 'trans_id'], axis=1, inplace=True)
+        df.drop(['bank', 'account', 'operation', 'k_symbol', 'date_x', 'trans_id'], axis=1, inplace=True)
+        df.rename(columns={'date_y': 'date'}, inplace=True)
     return df
 
 def merge_trans_loans_and_drop_features(df_loans_sorted, df_trans_sorted):
