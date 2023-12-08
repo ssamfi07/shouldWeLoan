@@ -6,13 +6,15 @@ import scipy
 
 def plot_balance_graphs(df_trans_sorted, df_loans_sorted):
     # for all accounts make the balance graph in time based in transactions - deposits(lines) or expenditures(dots)
-    for account in range(1,10000):
+    unique_account_ids = np.sort(df_trans_sorted['account_id'].unique())
+    df_accounts_without_loan = df_trans_sorted[df_trans_sorted['account_id'] == 1]
+    for account in unique_account_ids:
         df_account = df_trans_sorted[df_trans_sorted['account_id'] == account]
         if not df_account.empty:
-            print(df_account)
+            # print(df_account)
 
             # Plot 2: Amount with different colors for each type of operation - deposit or expenditure
-            plt.figure(figsize=(12, 8))
+            # plt.figure(figsize=(12, 8))
             colors = {'credit in cash': 'green', 'withdrawal in cash': 'red',
                     'collection from another bank': 'blue', 'remittance from another bank': 'orange', 'NaN': 'gray'}
 
@@ -32,12 +34,12 @@ def plot_balance_graphs(df_trans_sorted, df_loans_sorted):
                     # mean_balance_per_date = operation_data.groupby('date')['balance'].mean()
                     # mean_balance_per_date.plot(marker='o', linestyle='-', color=color)
                     
-                    plt.scatter(operation_data['date'], operation_data['amount'], label=operation, color=color)
+                    plt.scatter(operation_data['date'], operation_data['amount_trans'], label=operation, color=color)
 
             if account in df_loans_sorted['account_id'].values:
                 # Use boolean indexing to filter rows based on the condition
                 subset_df = df_loans_sorted[df_loans_sorted['account_id'] == account]
-                print(subset_df['payments'])
+                # print(subset_df['payments'])
                 # if (subset_df['account_id'] == ).all():
                 #     plt.axhline(y=subset_df['payments'][158], color='red', linestyle='--', alpha=0.5, label='montly loan payment')
                 if (subset_df['status'] == 1).all(): # because there is only one value anyway
@@ -45,12 +47,16 @@ def plot_balance_graphs(df_trans_sorted, df_loans_sorted):
                 elif (subset_df['status'] == -1).all():
                     plt.title('Balance for Each Type of Operation for account_id == ' + str(account) + " LOAN UNPAID")
             else:
+                # gather all the transactions with no loan
                 plt.title('Amount with Different Colors for Each Type of Operation for account_id == ' + str(account) + "NO LOAN")
+                # print(account)
+                df_accounts_without_loan = pd.concat([df_accounts_without_loan, df_account], ignore_index=True, sort=False)
 
             plt.xlabel('Date')
             plt.ylabel('Amount')
             plt.legend()
-            plt.show()
+            # plt.show()
+    return df_accounts_without_loan
 
 def pie_chart_card_types(df_card):
     # Count the occurrences of each type

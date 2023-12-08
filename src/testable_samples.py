@@ -12,7 +12,7 @@ df_trans = pd.read_csv('../bank/trans_dev.csv', sep=';', low_memory=False)
 # loan_id it's a list of lists
 # account_id (identifier), loan_id, amount_loan, duration, payments
 loan_info = {
-    1: [1234, 2000, 12, 166,66],
+    1: [1234, 95000, 24, 3958,333333333],
     4: [5678, 30000, 24, 1250],
     6: [91011, 40000, 24, 1666,66]
 }

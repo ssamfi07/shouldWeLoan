@@ -34,7 +34,7 @@ def select_pred_account(account_id):
 
 df_trans_sorted, df_loans_sorted = utils.sort_trans_loans_by_account_id(df_trans, df_loan)
 # data we want to predict the status for - it should have the correct features
-df_predict_account_x = select_pred_account(6)
+df_predict_account_x = select_pred_account(1)
 
 # drop irrelevant features
 df_loan_trans_account = utils.merge_trans_loans_and_drop_features(df_loans_sorted, df_trans_sorted)
@@ -45,10 +45,6 @@ df_predict_account_x['date_diff'].fillna(0, inplace=True)
 # find the disponent information
 accounts_with_disponent = utils.accounts_with_disponents(df_loan_trans_account, df_disp)
 new_accounts_with_disponent = utils.accounts_with_disponents(df_predict_account_x, df_disp)
-
-# add disponent info
-df_loan_trans_account = feature_engineering.add_disponent_info_to_loan_trans(df_loan_trans_account, accounts_with_disponent)
-df_predict_account_x = feature_engineering.add_disponent_info_to_loan_trans(df_predict_account_x, new_accounts_with_disponent)
 
 # for predicted we don't need because we want to fill it
 # but we can create the column
@@ -61,7 +57,8 @@ df_loan_trans_account = feature_engineering.transform_status_to_binary(df_loan_t
 # ----------------------------------------------------------------
 
 # each account transactions and balance evolution -- commented because we have a lot of accounts
-# exploratory_plots.plot_balance_graphs(df_trans_sorted, df_loans_sorted)
+df_accounts_with_no_loan = exploratory_plots.plot_balance_graphs(df_trans_sorted, df_loans_sorted)
+utils.simple_export(df_accounts_with_no_loan, "accounts_with_no_loan.csv")
 
 # accounts with disponents proportions
 # exploratory_plots.pie_chart_disponents(df_loan_trans_account)
@@ -83,6 +80,19 @@ df_loan_trans_account = feature_engineering.transform_status_to_binary(df_loan_t
 # exploratory_plots.bar("amount_trans", df_loan_trans_account)
 
 # ----------------------------------------------------------------
+# feature selection
+# ----------------------------------------------------------------
+# feature_engineering.outliers(df_loan_trans_account)
+
+# aggregate
+df_loan_trans_account = feature_engineering.aggregation(df_loan_trans_account)
+df_predict_account_x = feature_engineering.aggregation(df_predict_account_x)
+
+# add disponent info
+df_loan_trans_account = feature_engineering.add_disponent_info_to_loan_trans(df_loan_trans_account, accounts_with_disponent)
+df_predict_account_x = feature_engineering.add_disponent_info_to_loan_trans(df_predict_account_x, new_accounts_with_disponent)
+
+# ----------------------------------------------------------------
 # Correlations
 # ----------------------------------------------------------------
 
@@ -94,10 +104,6 @@ df_loan_trans_account = feature_engineering.transform_status_to_binary(df_loan_t
 # they are strongly correlated
 # correlations.spearman_correlation(df_loan_trans_account)
 
-# ----------------------------------------------------------------
-# feature selection
-# ----------------------------------------------------------------
-# feature_engineering.outliers(df_loan_trans_account)
 df_loan_trans_account = feature_engineering.feature_selection(df_loan_trans_account)
 df_loan_trans_account = feature_engineering.encoding_categorical(df_loan_trans_account)
 

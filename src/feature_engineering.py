@@ -1,5 +1,6 @@
 
 import pandas as pd
+import numpy as np
 from category_encoders import BinaryEncoder
 
 import scipy
@@ -22,8 +23,10 @@ def aggregation(df_loan_trans_account):
     df_loan_trans_account.rename(columns={'amount_y': 'amount_loan'}, inplace=True)
 
     # Create a DataFrame with unique values for each loan_id
-    unique_loan_info = df_loan_trans_account[['loan_id', 'amount_loan', 'duration', 'status']].drop_duplicates()
-
+    if 'status' in df_loan_trans_account.columns:
+        unique_loan_info = df_loan_trans_account[['loan_id', 'amount_loan', 'duration', 'status']].drop_duplicates()
+    else: # for data we want tp predict, status is missing
+        unique_loan_info = df_loan_trans_account[['loan_id', 'amount_loan', 'duration']].drop_duplicates()
     # Merge loan_data with unique_loan_info based on loan_id
     loan_data = pd.merge(loan_data, unique_loan_info, on='loan_id', how='left')
 
@@ -43,24 +46,32 @@ def transform_status_to_binary(df_loan_trans_account):
         axis=1)
     return df_loan_trans_account
 
+def transform_disponent_to_binary(df_loan_trans_account):
+    df_loan_trans_account['disp'] = df_loan_trans_account.apply(
+        lambda row: 1 if row['disp'] == "disponent" else 0,
+        axis=1)
+    return df_loan_trans_account
+
 # type and disp columns one hot encoded
 def encoding_categorical(df):
-    df_type = df.type
-    df_disponent = df.disp
-    # type of transaction
-    t_ohe = pd.get_dummies(df_type)
-    # print(t_ohe)
-    bin_enc_term = BinaryEncoder()
-    t_bin = bin_enc_term.fit_transform(df_type)
-    # print(t_bin)
-    # with disponent or not
-    d_ohe = pd.get_dummies(df_disponent)
-    # print(d_ohe)
-    bin_enc_home = BinaryEncoder()
-    d_bin = bin_enc_home.fit_transform(df_disponent)
-    # print(d_ohe)
+    if 'type' in df.columns:
+        df_type = df.type
+        # type of transaction
+        t_ohe = pd.get_dummies(df_type)
+        # print(t_ohe)
+        bin_enc_term = BinaryEncoder()
+        t_bin = bin_enc_term.fit_transform(df_type)
+        df = pd.get_dummies(df, columns=['type'])
 
-    df = pd.get_dummies(df, columns=['type', 'disp'])
+    if 'disp' in df.columns:
+        # df_disponent = df.disp
+        # with disponent or not
+        # d_ohe = pd.get_dummies(df_disponent)
+        # bin_enc_home = BinaryEncoder()
+        # d_bin = bin_enc_home.fit_transform(df_disponent)
+        # print(d_ohe)
+        # df['disp'] = pd.get_dummies(df, columns=['disp'])
+        transform_disponent_to_binary(df)
 
     # for the predicted df, we check if a column doesn't exist and we fill it with zeros
     if 'disp_no_disponent' not in df.columns:
@@ -128,8 +139,9 @@ def feature_selection(df):
             print(f"p-value: {pval:.25f}")
         
     # drop ids, irrelevant
-    df.drop(['account_id', 'loan_id'], axis=1, inplace=True)
+    df.drop(['account_id'], axis=1, inplace=True)
 
     # drop amount_trans based on the p-value evaluation for numerical features
-    df.drop(['amount_trans'], axis=1, inplace=True)
+    if 'amount' in df.columns:
+        df.drop(['amount_trans'], axis=1, inplace=True)
     return df
