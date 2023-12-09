@@ -1,12 +1,21 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
+import tensorflow as tf
+from tensorflow import keras
+
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import StandardScaler
+
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV
+
+from sklearn.metrics import  confusion_matrix, auc, roc_curve, roc_auc_score, precision_score, accuracy_score
+
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import  confusion_matrix,auc, roc_curve
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 # V2
 # ----------------------------------------------------------------
@@ -105,3 +114,93 @@ def knn(df):
     tn, fp, fn, tp = confusion_matrix(y_test_knn == 1, y_preds_knn > 0.5).ravel()
     print("Confusion Matrix:")
     print(tn, fp, fn, tp)
+
+def decision_trees(df):
+    # split into features and target variable
+    X = df.drop('status', axis=1)
+    y = df['status']
+    # split into train and test data
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # train decision trees model
+    dt_model = DecisionTreeClassifier(random_state=42)
+    dt_model.fit(X_train, y_train)
+    # make the predictions
+    y_pred = dt_model.predict(X_test)
+    y_proba = dt_model.predict_proba(X_test)[:, 1]
+    # evaluate the model
+    auc = roc_auc_score(y_test, y_proba)
+    precision = precision_score(y_test, y_pred)
+    accuracy = accuracy_score(y_test, y_pred)
+
+    auc_roc_plot(y_test, y_pred)
+
+    print(f'AUC: {auc:.4f}')
+    print(f'Precision: {precision:.4f}')
+    print(f'Accuracy: {accuracy:.4f}')
+
+def random_forest(df):
+    # split into features and target variable
+    X = df.drop('status', axis=1)
+    y = df['status']
+    # split the data into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    # train the Random Forest model
+    # !!! n_estimators is the number of trees in the forest
+    # experimentally deduced that 500 is the best value, if we increase over 1000 we will have a decrease in precision and accuracy
+    rf_model = RandomForestClassifier(n_estimators=500, random_state=42)
+    rf_model.fit(X_train, y_train)
+    # make predictions on the test set
+    y_pred = rf_model.predict(X_test)
+    y_proba = rf_model.predict_proba(X_test)[:, 1]
+    # evaluate the performance
+    auc = roc_auc_score(y_test, y_proba)
+    precision = precision_score(y_test, y_pred)
+    accuracy = accuracy_score(y_test, y_pred)
+
+    auc_roc_plot(y_test, y_pred)
+
+    print(f'AUC: {auc:.4f}')
+    print(f'Precision: {precision:.4f}')
+    print(f'Accuracy: {accuracy:.4f}')
+
+def NN(df):
+    X = df.drop('status', axis=1)
+    y = df['status']
+
+    # split the data into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+    # standardize the input features (optional but often recommended for neural networks)
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    X_test_scaled = scaler.transform(X_test)
+
+    # build a simple neural network model
+    model = keras.Sequential([
+        keras.layers.Dense(128, activation='relu', input_shape=(X_train.shape[1],)),
+        keras.layers.Dropout(0.3),
+        keras.layers.Dense(64, activation='relu'),
+        keras.layers.Dropout(0.3),
+        keras.layers.Dense(1, activation='sigmoid')
+    ])
+
+    # compile the model
+    model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+
+    # train the model
+    model.fit(X_train_scaled, y_train, epochs=20, batch_size=32, validation_split=0.25)
+
+    # make predictions on the test set
+    y_proba = model.predict(X_test_scaled)
+    y_pred = (y_proba > 0.5).astype(int)
+
+    # evaluate the performance
+    auc = roc_auc_score(y_test, y_proba)
+    precision = precision_score(y_test, y_pred)
+    accuracy = accuracy_score(y_test, y_pred)
+
+    auc_roc_plot(y_test, y_pred)
+
+    print(f'AUC: {auc:.4f}')
+    print(f'Precision: {precision:.4f}')
+    print(f'Accuracy: {accuracy:.4f}')
