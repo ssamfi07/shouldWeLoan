@@ -153,7 +153,7 @@ accounts_without_loans = accounts_without_loans[accounts_without_loans['num_tran
 accounts_without_loans = accounts_without_loans[(accounts_without_loans['num_transactions'] / accounts_without_loans['date_diff']) >= 3]
 
 loan_info = testable_samples.calculate_amount_loan_and_duration(accounts_without_loans)
-accounts_without_loan = testable_samples.add_amount_loan_and_duration_to_df(accounts_without_loans, loan_info)
+accounts_without_loans = testable_samples.add_amount_loan_and_duration_to_df(accounts_without_loans, loan_info)
 
 # filter out rows with negative amount_loan -- formula works for balanced transactions
 accounts_without_loans = accounts_without_loans[(accounts_without_loans['amount_loan'] >= 0)]
@@ -166,12 +166,35 @@ accounts_without_loans = feature_engineering.feature_selection(accounts_without_
 accounts_without_loans = feature_engineering.encoding_categorical(accounts_without_loans)
 
 # ----------------------------------------------------------------
-# predictions for the accounts_without_loan
+# predictions for the accounts_without_loans
 # ----------------------------------------------------------------
 
 predictions = modelling_v2.predict_status_lr(trained_lr_model, accounts_without_loans)
 print(predictions)
 
-# add the preditions to the status column for accounts_without_loans
-accounts_without_loans['status'] = predictions.astype(int)
+predictions_rounded = predictions.round().astype(int)
+
+print(len(predictions_rounded))
+print(len(accounts_without_loans))
+
+# check and correct the length mismatch
+if len(predictions_rounded) != len(accounts_without_loans):
+    # adjust the length of predictions_rounded to match the DataFrame
+    predictions_rounded = predictions_rounded[:len(accounts_without_loans)]
+
+# add the predictions to the 'status' column for accounts_without_loans and export
+accounts_without_loans['status'] = predictions_rounded
+
+# reset the index
+accounts_without_loans = accounts_without_loans.reset_index(drop=True)
+
 utils.simple_export(accounts_without_loans, "accounts_with_no_loans.csv")
+
+# ----------------------------------------------------------------
+# training again with the improved data
+# ----------------------------------------------------------------
+
+improved_training_data = pd.concat([df_loan_trans_account, accounts_without_loans], ignore_index=True)
+utils.simple_export(improved_training_data, "improved_db.csv")
+exploratory_plots.pie_chart_loan_paid(improved_training_data)
+trained_lr_model, scaler = modelling_v2.logistic_regression(improved_training_data)

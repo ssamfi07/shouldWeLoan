@@ -78,7 +78,8 @@ def pie_chart_disponents(df):
 
 def pie_chart_loan_paid(df):
     # drop duplicate rows with regards to loan_id
-    df = df.drop_duplicates(subset='loan_id', keep='first')
+    if 'loan_id' in df.columns:
+        df = df.drop_duplicates(subset='loan_id', keep='first')
     # count the occurrences of each status for each loan_id
     status_distribution = df.groupby(['status']).size()
 
