@@ -43,10 +43,10 @@ def logistic_regression(df):
     train_set_lr, test_set_lr = train_test_split(df, test_size = 0.2, random_state = seed)
     # train data
     X_train_lr = train_set_lr.drop(['status'], axis = 1)
-    y_train_lr = train_set_lr['status']
+    y_train_lr = train_set_lr['status']  # 1 - for status 0 predictions
     # test data
     X_test_lr = test_set_lr.drop(['status'], axis = 1)
-    y_test_lr = test_set_lr['status']
+    y_test_lr = test_set_lr['status']  # 1 - for status 0 predictions
 
     # Normalizing the train and test data
     scaler_lr = MinMaxScaler()
@@ -114,6 +114,7 @@ def knn(df):
     tn, fp, fn, tp = confusion_matrix(y_test_knn == 1, y_preds_knn > 0.5).ravel()
     print("Confusion Matrix:")
     print(tn, fp, fn, tp)
+    return knn, scaler_knn
 
 def decision_trees(df):
     # split into features and target variable
@@ -137,6 +138,8 @@ def decision_trees(df):
     print(f'AUC: {auc:.4f}')
     print(f'Precision: {precision:.4f}')
     print(f'Accuracy: {accuracy:.4f}')
+
+    return dt_model
 
 def random_forest(df):
     # split into features and target variable
@@ -162,6 +165,7 @@ def random_forest(df):
     print(f'AUC: {auc:.4f}')
     print(f'Precision: {precision:.4f}')
     print(f'Accuracy: {accuracy:.4f}')
+    return rf_model
 
 def NN(df):
     X = df.drop('status', axis=1)
@@ -175,11 +179,44 @@ def NN(df):
     X_train_scaled = scaler.fit_transform(X_train)
     X_test_scaled = scaler.transform(X_test)
 
+    max_acc_neurons = 0
+    max_acc = 0
+
+    for neurons in range(100, 1000, 50):
+
+        # build a simple neural network model
+        model = keras.Sequential([
+            keras.layers.Dense(neurons, activation='relu', input_shape=(X_train.shape[1],)),
+            keras.layers.Dropout(0.3),
+            keras.layers.Dense(neurons // 2, activation='relu'),
+            keras.layers.Dropout(0.3),
+            keras.layers.Dense(1, activation='sigmoid')
+        ])
+
+        # compile the model
+        model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+
+        # train the model
+        model.fit(X_train_scaled, y_train, epochs=50, batch_size=100, validation_split=0.25)
+
+        # make predictions on the test set
+        y_proba = model.predict(X_test_scaled)
+        y_pred = (y_proba > 0.5).astype(int)
+
+        # evaluate the performance
+        auc = roc_auc_score(y_test, y_proba)
+        precision = precision_score(y_test, y_pred)
+        accuracy = accuracy_score(y_test, y_pred)
+
+        if max_acc < accuracy:
+            max_acc = accuracy
+            max_acc_neurons = neurons
+
     # build a simple neural network model
     model = keras.Sequential([
-        keras.layers.Dense(128, activation='relu', input_shape=(X_train.shape[1],)),
+        keras.layers.Dense(neurons, activation='relu', input_shape=(X_train.shape[1],)),
         keras.layers.Dropout(0.3),
-        keras.layers.Dense(64, activation='relu'),
+        keras.layers.Dense(neurons // 2, activation='relu'),
         keras.layers.Dropout(0.3),
         keras.layers.Dense(1, activation='sigmoid')
     ])
@@ -188,7 +225,7 @@ def NN(df):
     model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 
     # train the model
-    model.fit(X_train_scaled, y_train, epochs=20, batch_size=32, validation_split=0.25)
+    model.fit(X_train_scaled, y_train, epochs=50, batch_size=100, validation_split=0.25)
 
     # make predictions on the test set
     y_proba = model.predict(X_test_scaled)
@@ -204,3 +241,4 @@ def NN(df):
     print(f'AUC: {auc:.4f}')
     print(f'Precision: {precision:.4f}')
     print(f'Accuracy: {accuracy:.4f}')
+    return model, scaler

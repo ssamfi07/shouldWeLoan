@@ -34,7 +34,8 @@ def plot_balance_graphs(df_trans_sorted, df_loans_sorted):
                     # mean_balance_per_date = operation_data.groupby('date')['balance'].mean()
                     # mean_balance_per_date.plot(marker='o', linestyle='-', color=color)
                     
-                    plt.scatter(operation_data['date'], operation_data['amount_trans'], label=operation, color=color)
+                    # amount for the transaction
+                    plt.scatter(operation_data['date'], operation_data['amount'], label=operation, color=color)
 
             if account in df_loans_sorted['account_id'].values:
                 # Use boolean indexing to filter rows based on the condition
@@ -55,7 +56,7 @@ def plot_balance_graphs(df_trans_sorted, df_loans_sorted):
             plt.xlabel('Date')
             plt.ylabel('Amount')
             plt.legend()
-            # plt.show()
+            plt.show()
     return df_accounts_without_loan
 
 def pie_chart_card_types(df_card):

@@ -10,7 +10,7 @@ import pingouin as pg
 
 def pearson_correlation(df):
     mask = np.triu(df.corr(), 1)
-    plt.figure(figsize=(19, 9))
+    plt.figure(figsize=(12, 9))
     plt.title("Pearson Correlation Heatmap")
     sns.heatmap(df.corr(), annot=True, vmax=1, vmin=-1, square=True, cmap='BrBG', mask=mask)
     plt.show()
@@ -33,7 +33,7 @@ def spearman_correlation(df):
     print(con.reset_index(drop=True))
 
     mask = np.triu(df_spear.corr(method='spearman'), 1)
-    plt.figure(figsize=(19, 9))
+    plt.figure(figsize=(12, 9))
     sns.heatmap(df_spear.corr(method='spearman'), annot=True, vmax=1, vmin=-1, square=True, cmap='BrBG', mask=mask);
     plt.title("Spearman Correlation Heatmap")
     plt.show()

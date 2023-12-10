@@ -41,6 +41,9 @@ df_loan_trans_account = utils.merge_trans_loans_and_drop_features(df_loans_sorte
 # find the disponent information
 accounts_with_disponent = utils.accounts_with_disponents(df_loan_trans_account, df_disp)
 
+# add disponent info -- only for plotting
+df_loan_trans_account = feature_engineering.add_disponent_info_to_loan_trans(df_loan_trans_account, accounts_with_disponent)
+
 df_loan_trans_account = feature_engineering.transform_status_to_binary(df_loan_trans_account)
 
 # simple_export(df_loan_trans_account, "new_db.csv")
@@ -50,7 +53,7 @@ df_loan_trans_account = feature_engineering.transform_status_to_binary(df_loan_t
 # ----------------------------------------------------------------
 
 # each account transactions and balance evolution -- commented because we have a lot of accounts
-# df_accounts_with_no_loan = exploratory_plots.plot_balance_graphs(df_trans_sorted, df_loans_sorted)
+# exploratory_plots.plot_balance_graphs(df_trans_sorted, df_loans_sorted)
 # utils.simple_export(df_accounts_with_no_loan, "accounts_with_no_loan.csv")
 
 # accounts with disponents proportions
@@ -83,22 +86,24 @@ df_loan_trans_account = feature_engineering.aggregation(df_loan_trans_account)
 # add disponent info
 df_loan_trans_account = feature_engineering.add_disponent_info_to_loan_trans(df_loan_trans_account, accounts_with_disponent)
 
+utils.simple_export(df_loan_trans_account, "aggregated.csv")
+
 # ----------------------------------------------------------------
 # Correlations
 # ----------------------------------------------------------------
 
 # correlations between the features and the target
-# correlations.pearson_correlation(df_loan_trans_account)
+correlations.pearson_correlation(df_loan_trans_account)
 
 # correlations between each feature
 # based on this result, we can decide which 2 features to drop from [amount_loan, payments or duration]
 # they are strongly correlated
-# correlations.spearman_correlation(df_loan_trans_account)
+correlations.spearman_correlation(df_loan_trans_account)
 
 df_loan_trans_account = feature_engineering.feature_selection(df_loan_trans_account)
 df_loan_trans_account = feature_engineering.encoding_categorical(df_loan_trans_account)
 
-utils.simple_export(df_loan_trans_account, "new_db.csv")
+utils.simple_export(df_loan_trans_account, "encoded.csv")
 
 # ----------------------------------------------------------------
 # modelling and evaluation
@@ -197,4 +202,51 @@ utils.simple_export(accounts_without_loans, "accounts_with_no_loans.csv")
 improved_training_data = pd.concat([df_loan_trans_account, accounts_without_loans], ignore_index=True)
 utils.simple_export(improved_training_data, "improved_db.csv")
 exploratory_plots.pie_chart_loan_paid(improved_training_data)
+
+# !!! drop disp for kaggle
+# improved_training_data.drop(['disp'], axis=1, inplace=True)
+
 trained_lr_model, scaler = modelling_v2.logistic_regression(improved_training_data)
+
+# ---------------------------------------------------------------
+# kaggle trials
+# ---------------------------------------------------------------
+
+"""
+
+df_trans_comp = pd.read_csv('../bank/trans_comp.csv', sep=';', low_memory=False)
+df_loans_comp = pd.read_csv('../bank/loan_comp.csv', sep=';', low_memory=False)
+
+df_trans_sorted, df_loans_sorted = utils.sort_trans_loans_by_account_id(df_trans_comp, df_loans_comp)
+
+# drop irrelevant features
+df_loan_trans_account = utils.merge_trans_loans_and_drop_features(df_loans_sorted, df_trans_sorted)
+
+# aggregate
+df_loan_trans_account = feature_engineering.aggregation(df_loan_trans_account)
+
+# drop status column
+df_loan_trans_account.drop(['status'], axis=1, inplace=True)
+
+# remember the loan_ids
+loan_ids = df_loan_trans_account['loan_id']
+
+print(loan_ids)
+
+df_loan_trans_account = feature_engineering.feature_selection(df_loan_trans_account)
+df_loan_trans_account = feature_engineering.encoding_categorical(df_loan_trans_account)
+
+utils.simple_export(df_loan_trans_account, "kaggle_db.csv")
+
+# Standardize the features for the predicted df
+X_scaled = scaler.transform(df_loan_trans_account)
+
+# Predict probabilities on the new dataset
+probabilities = trained_lr_model.predict_proba(X_scaled)[:, 1]  # Probability of status being 1
+
+# Prepare a DataFrame with loan_id and predicted probabilities
+result_df = pd.DataFrame({'Id': loan_ids, 'Predicted': probabilities})
+
+utils.simple_export(result_df, "kaggle_result.csv")
+
+"""
